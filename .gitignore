@@ -1,0 +1,11 @@
+# Folders
+Thumbs.db
+nbproject
+.DS_Store
+.settings
+.project
+.cache
+.tmproj
+*.esproj
+*.sublime-project
+*.sublime-workspace
