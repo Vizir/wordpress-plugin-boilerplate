@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package           VZ_Plugin
+ * @package           VZR_Plugin
  * @since             1.0.0
  *
  * Plugin Name:       WordPress Plugin
@@ -18,9 +18,9 @@
 // If this file is called directly, call the cops.
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
-if ( ! class_exists( 'VZ_Plugin' ) ) {
+if ( ! class_exists( 'VZR_Plugin' ) ) {
 
-    class VZ_Plugin {
+    class VZR_Plugin {
 
         /**
          * The array of actions registered with WordPress.
@@ -65,7 +65,7 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
          * @since    1.0.0
          */
         public function on_activation() {
-            do_action( 'vz_on_core_activation' );
+            do_action( 'vzr_on_core_activation' );
 
             wp_cache_flush();
             flush_rewrite_rules();
@@ -109,7 +109,7 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
                 $classname = str_replace( '-', ' ', $result );
                 $classname = ucfirst( $classname );
                 $classname = str_replace( ' ', '_', $classname );
-                $classname = 'VZ_Module_' . $classname;
+                $classname = 'VZR_Module_' . $classname;
 
                 $module_data = get_file_data( $classfile, [ 'dependencies' => 'Depends' ] );
                 $dependencies = $module_data['dependencies'];
@@ -222,7 +222,7 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
          * @access   private
          */
         public function load_plugin_textdomain() {
-            load_plugin_textdomain( VZ_TEXTDOMAIN, false, basename( dirname( __FILE__ ) ) . '/languages/' );
+            load_plugin_textdomain( VZR_TEXTDOMAIN, false, basename( dirname( __FILE__ ) ) . '/languages/' );
         }
 
         /**
@@ -246,16 +246,16 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
          */
         public function run() {
             // Definitions to plugin
-            define( 'VZ_VERSION', '1.2.0' );
-            define( 'VZ_PLUGIN_FILE', __FILE__ );
-            define( 'VZ_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-            define( 'VZ_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . dirname( VZ_PLUGIN_BASENAME ) );
-            define( 'VZ_PLUGIN_DIR', dirname( VZ_PLUGIN_BASENAME ) );
-            define( 'VZ_PLUGIN_URL', plugins_url( '', __FILE__ ) );
+            define( 'VZR_VERSION', '1.2.0' );
+            define( 'VZR_PLUGIN_FILE', __FILE__ );
+            define( 'VZR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+            define( 'VZR_PLUGIN_PATH', WP_PLUGIN_DIR . '/' . dirname( VZR_PLUGIN_BASENAME ) );
+            define( 'VZR_PLUGIN_DIR', dirname( VZR_PLUGIN_BASENAME ) );
+            define( 'VZR_PLUGIN_URL', plugins_url( '', __FILE__ ) );
 
             // Definition of text domain
-            if ( ! defined( 'VZ_TEXTDOMAIN' ) ) {
-                define( 'VZ_TEXTDOMAIN', 'wordpress-plugin' );
+            if ( ! defined( 'VZR_TEXTDOMAIN' ) ) {
+                define( 'VZR_TEXTDOMAIN', 'wordpress-plugin' );
             }
 
             // Running Modules (first of all)
@@ -265,7 +265,7 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
                 // Include Files if Configured
                 if ( property_exists( $module, 'includes' ) ) {
                     foreach ( (array) $module->includes as $class ) {
-                        $file = VZ_PLUGIN_PATH . '/modules/' . $module::MODULE_SLUG . '/includes/' . $class . '.php';
+                        $file = VZR_PLUGIN_PATH . '/modules/' . $module::MODULE_SLUG . '/includes/' . $class . '.php';
                         if ( file_exists( $file ) ) require_once $file;
                     }
                 }
@@ -292,7 +292,7 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
 /**
  * Making things happening
  */
-global $vz_core;
+global $vzr_core;
 
-$vz_core = new VZ_Plugin();
-$vz_core->run();
+$vzr_core = new VZR_Plugin();
+$vzr_core->run();

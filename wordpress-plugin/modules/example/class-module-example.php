@@ -1,10 +1,10 @@
 <?php
 /**
- * VZ_Module_Example
+ * VZR_Module_Example
  * Just a class for example
  *
- * @package         VZ_Plugin
- * @subpackage      VZ_Module_Example
+ * @package         VZR_Plugin
+ * @subpackage      VZR_Module_Example
  * @since           1.0.0
  *
  */
@@ -12,14 +12,14 @@
 // If this file is called directly, call the cops.
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
-if ( ! class_exists( 'VZ_Module_Example' ) ) {
-    class VZ_Module_Example {
+if ( ! class_exists( 'VZR_Module_Example' ) ) {
+    class VZR_Module_Example {
 
         /**
          * The Core object
          *
          * @since    1.0.0
-         * @var      VZ_Plugin    $core   The core class
+         * @var      VZR_Plugin    $core   The core class
          */
         private $core;
 
@@ -34,9 +34,9 @@ if ( ! class_exists( 'VZ_Module_Example' ) ) {
          * Define the core functionalities into plugin.
          *
          * @since    1.0.0
-         * @param    VZ_Plugin      $core   The Core object
+         * @param    VZR_Plugin      $core   The Core object
          */
-        public function __construct( VZ_Plugin $core ) {
+        public function __construct( VZR_Plugin $core ) {
             $this->core = $core;
         }
 

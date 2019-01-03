@@ -12,7 +12,7 @@ Just rename **wordpress-plugin** folder and PHP file with the name of your Plugi
 
 Note you should change Classes names and create your own modules based in module Example.
 
-Do not forget to use prefix like **VZ_** (for classes) and **vz_** (for functions) or anything related to your plugin's name like **wppb_**.
+Do not forget to use prefix like **VZR_** (for classes) and **vzr_** (for functions) or anything related to your plugin's name like **wppb_**.
 
 ## Translating
 
