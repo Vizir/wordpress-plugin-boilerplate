@@ -65,6 +65,9 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
          * @since    1.0.0
          */
         public function on_activation() {
+            do_action( 'vz_on_core_activation' );
+
+            wp_cache_flush();
             flush_rewrite_rules();
         }
 
@@ -89,11 +92,76 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
          * @access   private
          */
         private function add_modules() {
-            // Require module files:
-            require_once plugin_dir_path( __FILE__ ) . 'modules/example/class-module-example.php';
+            $modules = array();
 
-            // Instantiate the Module's classes:
-            $this->modules['example'] = new VZ_Module_Example( $this );
+            $path = plugin_dir_path( __FILE__ ) . 'modules' . DIRECTORY_SEPARATOR;
+            if ( ! is_dir( $path ) ) return;
+
+            $results = scandir( $path );
+
+            foreach ( $results as $result ) {
+                if ( $result[0] == '.' ) continue;
+                if ( ! is_dir( $path . $result ) ) continue;
+
+                $classfile = $path . $result . DIRECTORY_SEPARATOR . 'class-module-' . $result . '.php';
+                if ( ! file_exists( $classfile ) ) continue;
+
+                $classname = str_replace( '-', ' ', $result );
+                $classname = ucfirst( $classname );
+                $classname = str_replace( ' ', '_', $classname );
+                $classname = 'VZ_Module_' . $classname;
+
+                $module_data = get_file_data( $classfile, [ 'dependencies' => 'Depends' ] );
+                $dependencies = $module_data['dependencies'];
+
+                if ( ! empty( $dependencies ) ) {
+                    $dependencies = str_replace( ' ', '', $dependencies );
+                    $dependencies = explode( ',', $dependencies );
+                }
+
+                $modules[ $result ] = [ $classfile, $classname, $dependencies ];
+            }
+
+            $this->load_modules_by_dependence( $modules );
+        }
+
+        /**
+         * Load modules using dependencies
+         *
+         * @since    1.0.0
+         * @access   private
+         */
+        private function load_modules_by_dependence( $modules ) {
+            $not_loaded_modules = [];
+
+            foreach ( $modules as $module => $module_data ) {
+                if ( ! empty( $module_data[2] ) ) {
+                    $loaded = array_keys( $this->modules );
+
+                    if ( ! empty( array_diff( $module_data[2], $loaded ) ) ) {
+                        $not_loaded_modules[ $module ] = $module_data;
+                        continue;
+                    }
+                }
+
+                require_once $module_data[0];
+
+                if ( ! class_exists( $module_data[1] ) ) continue;
+                $this->modules[ $module ] = new $module_data[1]( $this );
+            }
+
+            $loaded = array_keys( $this->modules );
+
+            foreach ( $not_loaded_modules as $module_data ) {
+                // Still have dependencies
+                if ( ! empty( array_diff( $module_data[2], $loaded ) ) ) {
+                    continue;
+                }
+
+                // At least, one module has not dependencies: we can retry
+                $this->load_modules_by_dependence( $not_loaded_modules );
+                break;
+            }
         }
 
         /**
@@ -158,6 +226,20 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
         }
 
         /**
+         * Keep module objects
+         *
+         * @since    1.0.0
+         * @access   public
+         */
+        public function get_module( $module_name ) {
+            if ( empty( $this->modules[ $module_name ] ) ) {
+                return false;
+            }
+
+            return $this->modules[ $module_name ];
+        }
+
+        /**
          * Run the plugin.
          *
          * @since    1.0.0
@@ -179,6 +261,19 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
             // Running Modules (first of all)
             foreach ( $this->modules as $module ) {
                 $module->run();
+
+                // Include Files if Configured
+                if ( property_exists( $module, 'includes' ) ) {
+                    foreach ( (array) $module->includes as $class ) {
+                        $file = VZ_PLUGIN_PATH . '/modules/' . $module::MODULE_SLUG . '/includes/' . $class . '.php';
+                        if ( file_exists( $file ) ) require_once $file;
+                    }
+                }
+
+                // After Run Method
+                if ( method_exists( $module, 'after_run' ) ) {
+                    $module->after_run();
+                }
             }
 
             // Running Filters
