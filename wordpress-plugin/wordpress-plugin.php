@@ -55,7 +55,6 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
          * @since    1.0.0
          */
         public function __construct() {
-            $this->include_functions_file();
             $this->define_hooks();
             $this->add_modules();
         }
@@ -95,16 +94,6 @@ if ( ! class_exists( 'VZ_Plugin' ) ) {
 
             // Instantiate the Module's classes:
             $this->modules['example'] = new VZ_Module_Example( $this );
-        }
-
-        /**
-         * Load the core functions file
-         *
-         * @since    1.0.0
-         * @access   private
-         */
-        private function include_functions_file() {
-            require_once plugin_dir_path( __FILE__ ) . 'includes/functions-core.php';
         }
 
         /**
