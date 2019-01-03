@@ -50,12 +50,31 @@ if ( ! class_exists( 'VZ_Module_Example' ) ) {
         }
 
         /**
+         * After Run method. Optional.
+         *
+         * @since    1.0.0
+         * @access   private
+         */
+        public function after_run() {
+        }
+
+        /**
          * Run the module.
          *
          * @since    1.0.0
          */
         public function run() {
             $this->define_hooks();
+
+            /**
+             * To include files at running mobule just set this->include
+             * as a array of filenames considering /includes as root directory
+             * without .php extension. For example:
+             */
+            $this->includes = [
+                'class-example-included',
+                'function-example'
+            ];
         }
     }
 }
